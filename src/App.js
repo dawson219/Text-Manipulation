@@ -1,58 +1,42 @@
-import "./App.css";
-import Navbar from "./components/Navbar";
-import TextForm from "./components/TextForm";
-import About from "./components/About";
-import Alert from "./components/Alert";
-import React,{useState} from 'react';
+import React, { useState, useEffect } from 'react';
+import { Container, AppBar, Typography, Grow, Grid } from '@material-ui/core';
+import { useDispatch } from 'react-redux';
 
+import Posts from './components/Posts/Posts';
+import Form from './components/Form/Form';
+import { getPosts } from './actions/posts';
+import useStyles from './styles';
+import memories from './images/memories.png';
 
-function App() {
-  const [mode, setMode] = useState('light');
-  const [alert, setalert] = useState(null);
+const App = () => {
+  const [currentId, setCurrentId] = useState(0);
+  const dispatch = useDispatch();
+  const classes = useStyles();
 
-  const showAlert = (message , type)=>{
-    setalert({
-      msg: message,
-      type: type
-    })
-    setTimeout(() => {
-      setalert(null);
-    }, 1000);
-  }
+  useEffect(() => {
+    dispatch(getPosts());
+  }, [currentId, dispatch]);
 
-  const toggleMode = ()=>{
-    // removeAllClasses();
-    if(mode === 'dark'){
-      setMode('light');
-      document.body.style.backgroundColor = 'white';
-      // document.body.classList.add('bg-'+cls);
-      showAlert('Light Mode Enabled' , 'success');
-    }
-    else{
-      setMode('dark');
-      document.body.style.backgroundColor = '#062a4e';
-      showAlert('Dark Mode Enabled' , 'success')
-
-    }
-  }
-  // const removeAllClasses = ()=>{
-  //   document.body.classList.remove('bg-light');
-  //   document.body.classList.remove('bg-primary');
-  //   document.body.classList.remove('bg-warning');
-  //   document.body.classList.remove('bg-danger');
-  //   document.body.classList.remove('bg-success');
-  //   document.body.classList.remove('bg-dark');
-  // }
   return (
-    <>
-      <Navbar mode={mode} toggleMode = {toggleMode}/>
-      <Alert alert={alert}/>
-      <div className="container my-3">
-      <TextForm heading="TextUtils - Word Counter, Character Counter, Remove Extra Spaces" mode={mode} showAlert={showAlert}/>
-      <About mode={mode}/> 
-      </div>
-    </>
+    <Container maxWidth="lg">
+      <AppBar className={classes.appBar} position="static" color="inherit">
+        <Typography className={classes.heading} variant="h2" align="center">Rewind</Typography>
+        <img className={classes.image} src={memories} alt="icon" height="60" />
+      </AppBar>
+      <Grow in>
+        <Container>
+          <Grid container justify="space-between" alignItems="stretch" spacing={3}>
+            <Grid item xs={12} sm={7}>
+              <Posts setCurrentId={setCurrentId} />
+            </Grid>
+            <Grid item xs={12} sm={4}>
+              <Form currentId={currentId} setCurrentId={setCurrentId} />
+            </Grid>
+          </Grid>
+        </Container>
+      </Grow>
+    </Container>
   );
-}
+};
 
 export default App;
